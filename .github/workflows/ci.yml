@@ -1,17 +1,28 @@
-name: Security Pipeline
+name: Manual Security Analysis
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  # This line enables the manual "Run workflow" button in GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
-  test-and-lint:
+  analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python environment
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Run Tests
+
+      - name: Execute Tests
         run: python -m unittest discover tests
+
+      - name: Run Main Analysis
+        run: python analyzer.py
