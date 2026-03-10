@@ -1,28 +1,36 @@
-name: Manual Security Analysis
+name: Python Security Data Analysis CI
 
 on:
   push:
-    branches: [ main ]
-  # This line enables the manual "Run workflow" button in GitHub Actions tab
-  workflow_dispatch:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
-  analyze:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-      - name: Setup Python environment
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Execute Tests
-        run: python -m unittest discover tests
+    - name: Ensure Package Structure
+      run: |
+        # יוצר קובצי __init__.py אם הם חסרים כדי שפייתון יזהה את התיקיות כחבילות
+        touch src/__init__.py
+        touch tests/__init__.py
 
-      - name: Run Main Analysis
-        run: python analyzer.py
+    - name: Run Tests
+      run: |
+        # מגדיר את תיקיית השורש ב-PYTHONPATH ומריץ את הטסטים
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
+        python3 -m unittest discover -s tests -t .
