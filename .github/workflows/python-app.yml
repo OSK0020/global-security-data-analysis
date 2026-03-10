@@ -1,26 +1,34 @@
-name: Global Security CI with Report
+name: Manual Global Security Analysis
 
 on:
+  # מאפשר הפעלה ידנית בלחיצת כפתור
+  workflow_dispatch:
+  
+  # מפעיל אוטומטית בכל פעם שאתה מעלה קוד
   push:
     branches: [ "main", "master" ]
 
 jobs:
-  build-and-test:
+  build-and-report:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-    - name: Set up Python
+    - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
         python-version: "3.10"
 
-    - name: Run Analysis and Generate HTML
-      run: python3 analysis.py
+    - name: Run Analysis & Generate NASA Report
+      run: |
+        # הרצת הקובץ המאוחד שיצרנו
+        python3 analysis.py
 
-    - name: Upload HTML Report
+    - name: Archive Security Report
       uses: actions/upload-artifact@v4
       with:
-        name: security-report
+        name: NASA-Security-Report
         path: index.html
+        retention-days: 5
