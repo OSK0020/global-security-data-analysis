@@ -30,6 +30,9 @@ def process_security_data(data):
 def generate_nasa_style_report(summary, raw_data):
     """Generates a high-end, futuristic HTML report"""
     
+    # Logic to determine color before building the HTML string
+    alert_color_value = "var(--neon-red)" if "ALPHA" in summary["alert_level"] else "var(--accent-blue)"
+    
     rows = ""
     for item in raw_data:
         status_color = "#ff0055" if item['threat_level'] in ['High', 'Critical'] else "#00ff99"
@@ -165,7 +168,7 @@ def generate_nasa_style_report(summary, raw_data):
             </div>
             <div class="stat-card">
                 <div class="stat-label">ALERT STATUS</div>
-                <div class="stat-value" style="color: {var('--neon-red') if 'ALPHA' in summary['alert_level'] else var('--accent-blue')}">
+                <div class="stat-value" style="color: {alert_color_value}">
                     {summary['alert_level']}
                 </div>
             </div>
@@ -223,5 +226,6 @@ if __name__ == "__main__":
     print(f">>> REPORT GENERATED AT: {report_path}")
     print(">>> OPENING COMMAND CENTER...")
     
-    # 3. AUTO-OPEN THE FILE IN BROWSER
-    webbrowser.open('file://' + report_path)
+    # Only open browser if not running in a CI environment (like GitHub Actions)
+    if not os.environ.get('GITHUB_ACTIONS'):
+        webbrowser.open('file://' + report_path)
