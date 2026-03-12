@@ -1,10 +1,10 @@
 # 🛰️ OSN - Global Security Intelligence Analysis
 > **Mission-Critical Security Data Processing & Visualization System**
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg) ![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg) ![CI/CD](https://img.shields.io/badge/GitHub_Actions-NASA--Style_Reporting-orange) 
 
+![License](https://img.shields.io/badge/License-MIT-black?style=for-the-badge) ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white) ![CI/CD](https://img.shields.io/badge/GitHub_Actions-NASA_News_Style-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 
- >>> [CLICK HERE TO ACCESS LIVE WAR ROOM](https://osk0020.github.io/global-security-data-analysis/) <<<
+🚀>>> [CLICK HERE TO ACCESS LIVE WAR ROOM](https://osk0020.github.io/global-security-data-analysis/) <<<
 
 ## 🌌 Overview
 **OSN (Global Intelligence)** is a unified security analysis framework designed to process global threat vectors and generate high-fidelity, command-center-style intelligence reports. The system integrates data processing, automated unit testing, and futuristic visualization into a single, high-performance execution flow.
