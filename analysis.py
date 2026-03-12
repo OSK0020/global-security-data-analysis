@@ -111,7 +111,6 @@ def process_security_data(data):
     }
 
 def generate_nasa_report(summary, raw_data):
-    # אנו מעבירים את הנתונים כ-JSON לתוך ה-HTML כדי ש-JavaScript יוכל לייצר אנימציות דינמיות
     events_json = json.dumps(raw_data)
     
     html_content = f"""
@@ -121,6 +120,8 @@ def generate_nasa_report(summary, raw_data):
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>OSN GLOBAL COMMAND</title>
+        <!-- לוגו (Favicon) מיוצר אוטומטית כ-SVG -->
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23050a0f'/><circle cx='50' cy='50' r='40' stroke='%2300f3ff' stroke-width='5' fill='none'/><circle cx='50' cy='50' r='10' fill='%23ff003c'/></svg>">
         <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
         <style>
             :root {{
@@ -139,14 +140,13 @@ def generate_nasa_report(summary, raw_data):
                 background-color: var(--bg);
                 color: #fff;
                 font-family: 'Rajdhani', sans-serif;
-                overflow-x: hidden;
+                overflow: hidden; /* למנוע גלילה מיותרת בכל המסך */
                 background-image: 
                     linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
                 background-size: 30px 30px;
             }}
 
-            /* אפקט מסך ישן / סריקה */
             .scanlines {{
                 position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
                 background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
@@ -174,13 +174,11 @@ def generate_nasa_report(summary, raw_data):
             .clock {{ font-family: 'Share Tech Mono'; font-size: 1.5rem; color: var(--cyan); }}
 
             .dashboard {{
-                display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px 40px; height: calc(100vh - 160px);
+                display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px 40px; 
+                height: calc(100vh - 150px); /* הותאם כדי לפנות מקום לסרגל למטה */
             }}
 
-            /* פאנל שמאלי - סטטוס מערכת */
-            .sidebar {{
-                display: flex; flex-direction: column; gap: 20px;
-            }}
+            .sidebar {{ display: flex; flex-direction: column; gap: 20px; }}
 
             .status-card {{
                 background: var(--panel-bg); border: 1px solid rgba(0, 243, 255, 0.2);
@@ -189,24 +187,27 @@ def generate_nasa_report(summary, raw_data):
             .status-card h3 {{ color: rgba(255,255,255,0.5); font-size: 1rem; letter-spacing: 2px; margin-bottom: 10px; }}
             .status-card .value {{ font-family: 'Share Tech Mono'; font-size: 2.5rem; color: var(--alert); text-shadow: 0 0 10px var(--alert); }}
             
-            /* תצוגת הרדאר הקטנה */
+            /* עיצוב המכ"ם החדש */
             .radar-box {{ height: 200px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px solid var(--cyan); background: rgba(0, 243, 255, 0.05); }}
-            .radar {{ width: 150px; height: 150px; border-radius: 50%; border: 1px solid rgba(0,243,255,0.3); position: relative; }}
+            .radar {{ width: 140px; height: 140px; border-radius: 50%; border: 2px solid rgba(0,243,255,0.4); position: relative; box-shadow: 0 0 15px rgba(0,243,255,0.2); background: radial-gradient(circle, rgba(0,243,255,0.1) 0%, transparent 60%); }}
+            .radar .horizontal {{ position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(0,243,255,0.4); }}
+            .radar::before {{ content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: rgba(0,243,255,0.4); }}
+            .radar .circle1 {{ position: absolute; top: 20px; left: 20px; width: 96px; height: 96px; border-radius: 50%; border: 1px solid rgba(0,243,255,0.2); }}
+            .radar .circle2 {{ position: absolute; top: 45px; left: 45px; width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(0,243,255,0.2); }}
             .radar::after {{
                 content: ''; position: absolute; top: 50%; left: 50%; width: 50%; height: 50%;
-                background: conic-gradient(from 0deg, transparent 70%, rgba(0, 243, 255, 0.8) 100%);
-                transform-origin: 0 0; animation: scan 4s linear infinite;
+                background: conic-gradient(from 0deg, transparent 0%, rgba(0, 243, 255, 0.1) 50%, rgba(0, 243, 255, 0.8) 100%);
+                transform-origin: 0 0; animation: scan 3s linear infinite; border-right: 2px solid rgba(0, 243, 255, 0.8);
             }}
 
-            /* פאנל ימני - הכתבות חיות */
             .news-feed {{
                 display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-                gap: 15px; overflow-y: auto; padding-right: 10px;
+                gap: 15px; overflow-y: auto; padding-right: 10px; padding-bottom: 20px;
             }}
             
             .news-feed::-webkit-scrollbar {{ width: 8px; }}
             .news-feed::-webkit-scrollbar-track {{ background: rgba(0,0,0,0.5); }}
-            .news-feed::-webkit-scrollbar-thumb {{ background: var(--cyan); }}
+            .news-feed::-webkit-scrollbar-thumb {{ background: var(--cyan); border-radius: 4px; }}
 
             .news-card {{
                 background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.1);
@@ -232,15 +233,31 @@ def generate_nasa_report(summary, raw_data):
             .card-title {{ font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; line-height: 1.3; }}
             .card-desc {{ font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.4; }}
 
-            /* טייקר חדשות למטה */
+            /* עיצוב מעודכן ומתוקן לסרגל החדשות למטה */
             .ticker-wrap {{
-                position: fixed; bottom: 0; width: 100%; height: 40px; background: #000;
-                border-top: 2px solid var(--cyan); display: flex; align-items: center; overflow: hidden;
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 40px; 
+                background: #050a0f; border-top: 2px solid var(--cyan); 
+                display: flex; align-items: center; z-index: 1000;
             }}
-            .ticker-title {{ background: var(--cyan); color: #000; padding: 0 20px; font-weight: bold; height: 100%; display: flex; align-items: center; z-index: 10; font-family: 'Share Tech Mono'; }}
-            .ticker-move {{ display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker 40s linear infinite; font-family: 'Share Tech Mono'; }}
-            .ticker-item {{ margin-right: 50px; color: #fff; }}
-            .ticker-item span {{ color: var(--red); margin-right: 10px; }}
+            .ticker-title {{
+                background: var(--cyan); color: #000; padding: 0 20px; font-weight: bold; 
+                height: 100%; display: flex; align-items: center; z-index: 20; 
+                position: relative; font-family: 'Share Tech Mono'; 
+                box-shadow: 5px 0 15px rgba(0,0,0,0.8); white-space: nowrap;
+            }}
+            .ticker-marquee {{
+                flex: 1; overflow: hidden; position: relative; height: 100%; 
+                display: flex; align-items: center;
+            }}
+            .ticker-move {{
+                display: flex; white-space: nowrap; padding-left: 100%; 
+                animation: ticker 120s linear infinite; /* מהירות איטית יותר לקריאה נוחה */
+            }}
+            .ticker-item {{
+                margin-right: 50px; color: #fff; font-family: 'Share Tech Mono'; 
+                display: inline-flex; align-items: center;
+            }}
+            .ticker-item span {{ color: var(--red); margin-right: 10px; font-weight: bold; }}
 
             @keyframes blink {{ 0%, 100% {{ opacity: 1; }} 50% {{ opacity: 0.3; }} }}
             @keyframes scan {{ 100% {{ transform: rotate(360deg); }} }}
@@ -280,8 +297,12 @@ def generate_nasa_report(summary, raw_data):
                 </div>
 
                 <div class="radar-box">
-                    <div class="radar"></div>
-                    <div style="position:absolute; color:var(--cyan); font-family:'Share Tech Mono'; font-size:0.8rem; bottom: 10px;">SCANNING FREQUENCIES...</div>
+                    <div class="radar">
+                        <div class="horizontal"></div>
+                        <div class="circle1"></div>
+                        <div class="circle2"></div>
+                    </div>
+                    <div style="position:absolute; color:var(--cyan); font-family:'Share Tech Mono'; font-size:0.8rem; bottom: 10px; z-index: 10;">SCANNING FREQUENCIES...</div>
                 </div>
             </div>
 
@@ -292,8 +313,10 @@ def generate_nasa_report(summary, raw_data):
 
         <div class="ticker-wrap">
             <div class="ticker-title">RAW DATA FEED</div>
-            <div class="ticker-move" id="ticker-container">
-                <!-- Ticker items will be injected here -->
+            <div class="ticker-marquee">
+                <div class="ticker-move" id="ticker-container">
+                    <!-- Ticker items will be injected here -->
+                </div>
             </div>
         </div>
 
@@ -339,7 +362,7 @@ def generate_nasa_report(summary, raw_data):
                 container.appendChild(card);
 
                 // Build Ticker Item
-                tickerHTML += `<span class="ticker-item"><span>[${{item.time_label}}]</span> ${{item.title}}</span>`;
+                tickerHTML += `<div class="ticker-item"><span>[${{item.time_label}}]</span> ${{item.title}}</div>`;
             }});
 
             ticker.innerHTML = tickerHTML;
@@ -357,9 +380,7 @@ if __name__ == "__main__":
     summary = process_security_data(raw_data)
     report_path = generate_nasa_report(summary, raw_data)
     
-    # הוספת קישור בולט למסך הסיכום של GitHub Actions
     if "GITHUB_STEP_SUMMARY" in os.environ:
-        # חילוץ שם המשתמש ושם המאגר כדי לבנות את הלינק לאתר
         repo = os.environ.get("GITHUB_REPOSITORY", "user/repo")
         owner = repo.split('/')[0]
         repo_name = repo.split('/')[1] if '/' in repo else repo
@@ -370,7 +391,6 @@ if __name__ == "__main__":
             f.write(f"### 🚀 [>>> CLICK HERE TO ACCESS LIVE WAR ROOM <<<]({pages_url})\n\n")
             f.write(f"**Current Threat Level:** `{summary['alert_level']}` | **Incidents in Last Hour:** `{summary['last_hour_count']}`\n")
 
-    # פתיחה אוטומטית רק אם אתה מריץ מקומית (על המחשב שלך)
     try:
         if "GITHUB_ACTIONS" not in os.environ:
             webbrowser.open('file://' + report_path)
