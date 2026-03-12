@@ -357,8 +357,22 @@ if __name__ == "__main__":
     summary = process_security_data(raw_data)
     report_path = generate_nasa_report(summary, raw_data)
     
-    # פתיחה אוטומטית רק אם אתה מריץ מקומית. ב-GitHub Actions זה פשוט ישמור את הקובץ.
+    # הוספת קישור בולט למסך הסיכום של GitHub Actions
+    if "GITHUB_STEP_SUMMARY" in os.environ:
+        # חילוץ שם המשתמש ושם המאגר כדי לבנות את הלינק לאתר
+        repo = os.environ.get("GITHUB_REPOSITORY", "user/repo")
+        owner = repo.split('/')[0]
+        repo_name = repo.split('/')[1] if '/' in repo else repo
+        pages_url = f"https://{owner}.github.io/{repo_name}/"
+        
+        with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+            f.write("## 🌍 OSN Command Center Updated Successfully!\n\n")
+            f.write(f"### 🚀 [>>> CLICK HERE TO ACCESS LIVE WAR ROOM <<<]({pages_url})\n\n")
+            f.write(f"**Current Threat Level:** `{summary['alert_level']}` | **Incidents in Last Hour:** `{summary['last_hour_count']}`\n")
+
+    # פתיחה אוטומטית רק אם אתה מריץ מקומית (על המחשב שלך)
     try:
-        webbrowser.open('file://' + report_path)
+        if "GITHUB_ACTIONS" not in os.environ:
+            webbrowser.open('file://' + report_path)
     except:
         pass
