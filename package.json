@@ -27,5 +27,40 @@
     "eslint-config-next": "16.2.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom",
+    "@visx/visx": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@visx/annotation": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/axis": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/bounds": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/brush": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/clip-path": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/delaunay": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/drag": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/geo": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/glyph": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/gradient": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/grid": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/group": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/heatmap": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/hierarchy": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/legend": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/marker": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/network": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/pattern": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/react-spring": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/responsive": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/sankey": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/shape": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/text": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/threshold": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/tooltip": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/xychart": { "react": "$react", "react-dom": "$react-dom" },
+    "@visx/zoom": { "react": "$react", "react-dom": "$react-dom" }
   }
 }
